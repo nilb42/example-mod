@@ -5,7 +5,7 @@
 
 using namespace geode::prelude;
 
-// Обычные глобальные переменные, которые 100% поймет любой компилятор
+// Обычные глобальные переменные
 bool g_isModActive = true;
 float g_clickTimer = 0.0f;
 float g_lastY = 0.0f;
@@ -45,7 +45,8 @@ class $modify(SpamWarningLayer, LevelCompleteLayer) {
 
 class $modify(MyPlayer, PlayerObject) {
     void pushButton(PlayerButton btn) {
-        if (!g_isModActive || !this->m_isDart || !Mod::get()->getSettingValue<bool>("enable-wave")) {
+        // ИСПРАВЛЕНИЕ: Используем isDart() вместо m_isDart
+        if (!g_isModActive || !this->isDart() || !Mod::get()->getSettingValue<bool>("enable-wave")) {
             PlayerObject::pushButton(btn);
             return;
         }
@@ -83,14 +84,16 @@ class $modify(MyPlayer, PlayerObject) {
             g_isSpamming = false;
         }
         
-        if (this->m_isDart && g_isSpamming && Mod::get()->getSettingValue<bool>("enable-wave")) {
+        // ИСПРАВЛЕНИЕ: Используем isDart()
+        if (this->isDart() && g_isSpamming && Mod::get()->getSettingValue<bool>("enable-wave")) {
             float strength = Mod::get()->getSettingValue<double>("lock-strength");
             this->m_yVelocity *= 0.7f;
             float newY = this->getPositionY() + (g_slope * dt * strength);
             this->setPositionY(newY);
         }
         
-        if (this->m_isShip && Mod::get()->getSettingValue<bool>("enable-ship")) {
+        // ИСПРАВЛЕНИЕ: Используем isFly() вместо m_isShip
+        if (this->isFly() && Mod::get()->getSettingValue<bool>("enable-ship")) {
             if (this->m_yVelocity > -5.0f && this->m_yVelocity < 5.0f) {
                 this->m_yVelocity *= 0.93f;
             }
