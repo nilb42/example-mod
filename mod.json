@@ -5,11 +5,11 @@
   "id": "nil422.smooth_spam",
   "name": "Smart Wave Assist",
   "developer": "nil422",
-  "description": "Умный ассистент волны. Защищает от кривого спама, но позволяет падать при отпускании кнопки. Включается в настройках мода.",
+  "description": "Smart wave assistant. Auto-corrects bad spam but lets you fall if you stop clicking. Toggle in Geode settings.",
   "early-load": false,
   "settings": {
     "enable-wave": {
-      "name": "Включить умную волну",
+      "name": "Enable Smart Wave",
       "type": "bool",
       "default": true
     }
