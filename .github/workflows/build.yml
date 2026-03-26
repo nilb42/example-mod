@@ -1,20 +1,20 @@
 name: Build Geode Mod
+
 on:
-  workflow_dispatch:
   push:
     branches:
       - "**"
+  workflow_dispatch:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-        - name: Windows
-          os: windows-latest
+    name: Build Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    name: Build ${{ matrix.config.name }}
-    uses: geode-sdk/build-action/.github/workflows/build.yml@v2
-    with:
-      os: ${{ matrix.config.os }}
+      - name: Build Mod
+        uses: geode-sdk/build-action@v2
+        with:
+          target: win
