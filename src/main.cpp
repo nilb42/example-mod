@@ -45,8 +45,9 @@ class $modify(MyPlayer, PlayerObject) {
             float currentY = this->getPositionY();
             float diff = g_brainCenterY - currentY;
             
-            // If the player drifts more than 2 pixels from the invisible line
-            if (std::abs(diff) > 2.0f) {
+            // THE FIX: Simple math instead of missing 'std::abs'
+            // If the player drifts more than 2 pixels UP or DOWN
+            if (diff > 2.0f || diff < -2.0f) {
                 // Take control and gently pull the player back to the invisible line
                 this->setPositionY(currentY + diff * 0.1f);
             }
