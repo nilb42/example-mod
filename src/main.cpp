@@ -3,9 +3,9 @@
 
 using namespace geode::prelude;
 
-// Память "мозга" мода
+// Global "brain" memory for the invisible line
 float g_timeSinceClick = 0.0f;
-float g_spamCenterY = 0.0f;
+float g_brainCenterY = 0.0f;
 bool g_isSpamming = false;
 
 class $modify(MyPlayer, PlayerObject) {
@@ -13,46 +13,41 @@ class $modify(MyPlayer, PlayerObject) {
     void pushButton(PlayerButton btn) {
         PlayerObject::pushButton(btn);
         
-        // Если мод выключен в настройках Geode - ничего не делаем
-        if (!Mod::get()->getSettingValue<bool>("enable-wave")) return;
-
-        // "Мозг" анализирует CPS (скорость кликов)
-        if (g_timeSinceClick < 0.2f) { // Если клики идут быстро (высокий CPS)
+        // The "brain" analyzes CPS (Clicks Per Second)
+        if (g_timeSinceClick < 0.2f) { // If clicking fast
             if (!g_isSpamming) {
-                // Игрок начал спамить. Запоминаем начальную высоту (нашу "невидимую линию")
-                g_spamCenterY = this->getPositionY();
+                // Player started spamming. Memorize the starting height (invisible line)
+                g_brainCenterY = this->getPositionY();
                 g_isSpamming = true;
             } else {
-                // Игрок продолжает спамить. Плавно смещаем линию за ним, если он чуть уходит вверх/вниз
-                g_spamCenterY = (g_spamCenterY * 0.7f) + (this->getPositionY() * 0.3f);
+                // Player continues spamming. Smoothly follow the player's center
+                g_brainCenterY = (g_brainCenterY * 0.7f) + (this->getPositionY() * 0.3f);
             }
         }
         
-        // Обнуляем таймер при каждом клике
+        // Reset the timer on every click
         g_timeSinceClick = 0.0f; 
     }
 
     void update(float dt) {
         PlayerObject::update(dt);
         
-        if (!Mod::get()->getSettingValue<bool>("enable-wave")) return;
-
-        // Считаем время после последнего клика
+        // Track time since the last click
         g_timeSinceClick += dt;
 
-        // Если игрок специально отпустил кнопку (не кликает дольше 0.15 секунд)
+        // If the player intentionally stops clicking (waits more than 0.15 seconds)
         if (g_timeSinceClick > 0.15f) {
-            g_isSpamming = false; // Отключаем защиту, даем свободно падать
+            g_isSpamming = false; // Disable the lock, allow natural falling
         }
 
-        // Если прямо сейчас идет быстрый спам
+        // Apply the invisible line correction ONLY if actively spamming
         if (g_isSpamming) {
             float currentY = this->getPositionY();
-            float diff = g_spamCenterY - currentY;
+            float diff = g_brainCenterY - currentY;
             
-            // Если игрок сбился со спама и начал улетать слишком сильно (больше 2 пикселей)
+            // If the player drifts more than 2 pixels from the invisible line
             if (std::abs(diff) > 2.0f) {
-                // Мод берет управление на себя и мягко притягивает фигурку обратно к невидимой линии
+                // Take control and gently pull the player back to the invisible line
                 this->setPositionY(currentY + diff * 0.1f);
             }
         }
