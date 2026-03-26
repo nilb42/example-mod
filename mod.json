@@ -1,17 +1,11 @@
 {
   "geode": "3.3.0",
   "version": "v1.0.0",
-  "id": "твойник.smooth_spam",
+  "id": "nil422.smooth_spam",
   "name": "Smooth Spam",
-  "developer": "Твой Ник",
+  "developer": "nil422",
   "description": "Take your wave gameplay to the next level. Press '[' in-game to toggle the assistant ON/OFF instantly. Features customizable lock strength, Max CPS limiter, visual debug lines, and a soft stabilizer for accurate ship straightfly.",
   "early-load": false,
-  "dependencies": [
-    {
-      "id": "geode.node-ids",
-      "version": "v1.4.0"
-    }
-  ],
   "settings": {
     "enable-wave": {
       "name": "Enable Wave Assist",
