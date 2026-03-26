@@ -1,5 +1,5 @@
 {
-  "geode": "3.3.0",
+  "geode": "3.4.0",
   "gd": "2.206",
   "version": "v1.0.0",
   "id": "nil422.smooth_spam",
@@ -33,11 +33,6 @@
       "min": 8,
       "max": 30,
       "control": "slider"
-    },
-    "show-lines": {
-      "name": "Show Lines",
-      "type": "bool",
-      "default": false
     }
   }
 }
