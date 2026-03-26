@@ -1,38 +1,17 @@
 {
   "geode": "3.4.0",
   "gd": "2.206",
-  "version": "v1.0.0",
+  "version": "v1.1.0",
   "id": "nil422.smooth_spam",
-  "name": "Smooth Spam",
+  "name": "Smart Wave Assist",
   "developer": "nil422",
-  "description": "Smart wave and ship assistant. Press '[' in-game to toggle ON/OFF.",
+  "description": "Умный ассистент волны. Защищает от кривого спама, но позволяет падать при отпускании кнопки. Включается в настройках мода.",
   "early-load": false,
   "settings": {
     "enable-wave": {
-      "name": "Enable Wave Assist",
+      "name": "Включить умную волну",
       "type": "bool",
       "default": true
-    },
-    "enable-ship": {
-      "name": "Accurate Straightfly",
-      "type": "bool",
-      "default": true
-    },
-    "lock-strength": {
-      "name": "Lock Strength (Wave)",
-      "type": "float",
-      "default": 0.5,
-      "min": 0.1,
-      "max": 1.0,
-      "control": "slider"
-    },
-    "max-cps": {
-      "name": "Max CPS (Wave)",
-      "type": "int",
-      "default": 15,
-      "min": 8,
-      "max": 30,
-      "control": "slider"
     }
   }
 }
