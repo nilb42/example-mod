@@ -13,9 +13,9 @@ class $modify(MyUILayer, UILayer) {
         if (key == cocos2d::enumKeyCodes::KEY_LeftBracket) {
             g_isModActive = !g_isModActive;
             if (g_isModActive) {
-                Notification::create("Smooth Spam: ON")->show();
+                FLAlertLayer::create("Smooth Spam", "Mod is ON", "OK")->show();
             } else {
-                Notification::create("Smooth Spam: OFF")->show();
+                FLAlertLayer::create("Smooth Spam", "Mod is OFF", "OK")->show();
             }
         }
     }
