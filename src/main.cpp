@@ -6,10 +6,6 @@
 using namespace geode::prelude;
 
 bool g_isModActive = true;
-float g_clickTimer = 0.0f;
-float g_lastY = 0.0f;
-float g_slope = 0.0f;
-bool g_isSpamming = false;
 
 class $modify(MyUILayer, UILayer) {
     void keyDown(enumKeyCodes key) {
@@ -43,56 +39,86 @@ class $modify(SpamWarningLayer, LevelCompleteLayer) {
 };
 
 class $modify(MyPlayer, PlayerObject) {
+    // Наша личная память для каждого игрока, которую игра не сможет спрятать
+    struct Fields {
+        bool isDart = false;
+        bool isShip = false;
+        float clickTimer = 0.0f;
+        float lastY = 0.0f;
+        float slope = 0.0f;
+        bool isSpamming = false;
+    };
+
+    // --- НАЧАЛО ХИТРОСТИ ---
+    // Слушаем портал волны
+    void toggleDartMode(bool p0, bool p1) {
+        PlayerObject::toggleDartMode(p0, p1);
+        m_fields->isDart = p0;
+        if (p0) m_fields->isShip = false;
+    }
+
+    // Слушаем портал корабля
+    void toggleFlyMode(bool p0, bool p1) {
+        PlayerObject::toggleFlyMode(p0, p1);
+        m_fields->isShip = p0;
+        if (p0) m_fields->isDart = false;
+    }
+
+    // Если коснулись любого другого портала — отключаем всё
+    void toggleBirdMode(bool p0, bool p1) { PlayerObject::toggleBirdMode(p0, p1); if(p0) { m_fields->isDart = false; m_fields->isShip = false; } }
+    void toggleRollMode(bool p0, bool p1) { PlayerObject::toggleRollMode(p0, p1); if(p0) { m_fields->isDart = false; m_fields->isShip = false; } }
+    void toggleRobotMode(bool p0, bool p1) { PlayerObject::toggleRobotMode(p0, p1); if(p0) { m_fields->isDart = false; m_fields->isShip = false; } }
+    void toggleSpiderMode(bool p0, bool p1) { PlayerObject::toggleSpiderMode(p0, p1); if(p0) { m_fields->isDart = false; m_fields->isShip = false; } }
+    void toggleSwingMode(bool p0, bool p1) { PlayerObject::toggleSwingMode(p0, p1); if(p0) { m_fields->isDart = false; m_fields->isShip = false; } }
+    // --- КОНЕЦ ХИТРОСТИ ---
+
     void pushButton(PlayerButton btn) {
-        // Возвращаем правильное m_isDart
-        if (!g_isModActive || !this->m_isDart || !Mod::get()->getSettingValue<bool>("enable-wave")) {
+        if (!g_isModActive || !m_fields->isDart || !Mod::get()->getSettingValue<bool>("enable-wave")) {
             PlayerObject::pushButton(btn);
             return;
         }
         
         float cps = 0.0f;
-        if (g_clickTimer > 0.01f) {
-            cps = 1.0f / g_clickTimer;
+        if (m_fields->clickTimer > 0.01f) {
+            cps = 1.0f / m_fields->clickTimer;
         }
         
         if (cps >= 8.0f) {
             float curY = this->getPositionY();
-            float newSlope = (curY - g_lastY) / g_clickTimer;
-            if (g_isSpamming) {
-                g_slope = (g_slope * 0.5f) + (newSlope * 0.5f);
+            float newSlope = (curY - m_fields->lastY) / m_fields->clickTimer;
+            if (m_fields->isSpamming) {
+                m_fields->slope = (m_fields->slope * 0.5f) + (newSlope * 0.5f);
             } else {
-                g_slope = newSlope;
+                m_fields->slope = newSlope;
             }
-            g_isSpamming = true;
+            m_fields->isSpamming = true;
         }
         
         if (cps <= Mod::get()->getSettingValue<int64_t>("max-cps")) {
             PlayerObject::pushButton(btn);
         }
         
-        g_clickTimer = 0.0f;
-        g_lastY = this->getPositionY();
+        m_fields->clickTimer = 0.0f;
+        m_fields->lastY = this->getPositionY();
     }
 
     void update(float dt) {
         PlayerObject::update(dt);
         if (!g_isModActive) return;
         
-        g_clickTimer += dt;
-        if (g_clickTimer > 0.3f) {
-            g_isSpamming = false;
+        m_fields->clickTimer += dt;
+        if (m_fields->clickTimer > 0.3f) {
+            m_fields->isSpamming = false;
         }
         
-        // Возвращаем правильное m_isDart
-        if (this->m_isDart && g_isSpamming && Mod::get()->getSettingValue<bool>("enable-wave")) {
+        if (m_fields->isDart && m_fields->isSpamming && Mod::get()->getSettingValue<bool>("enable-wave")) {
             float strength = Mod::get()->getSettingValue<double>("lock-strength");
             this->m_yVelocity *= 0.7f;
-            float newY = this->getPositionY() + (g_slope * dt * strength);
+            float newY = this->getPositionY() + (m_fields->slope * dt * strength);
             this->setPositionY(newY);
         }
         
-        // Возвращаем правильное m_isShip
-        if (this->m_isShip && Mod::get()->getSettingValue<bool>("enable-ship")) {
+        if (m_fields->isShip && Mod::get()->getSettingValue<bool>("enable-ship")) {
             if (this->m_yVelocity > -5.0f && this->m_yVelocity < 5.0f) {
                 this->m_yVelocity *= 0.93f;
             }
