@@ -39,10 +39,13 @@ class $modify(SpamWarningLayer, LevelCompleteLayer) {
 };
 
 class $modify(MyPlayer, PlayerObject) {
-    float m_clickTimer = 0.0f;
-    float m_lastY = 0.0f;
-    float m_slope = 0.0f;
-    bool m_isSpamming = false;
+    // ВЕРНОЕ РЕШЕНИЕ: Прячем наши переменные в struct Fields!
+    struct Fields {
+        float m_clickTimer = 0.0f;
+        float m_lastY = 0.0f;
+        float m_slope = 0.0f;
+        bool m_isSpamming = false;
+    };
 
     void pushButton(PlayerButton btn) {
         if (!g_isModActive || !this->m_isDart || !Mod::get()->getSettingValue<bool>("enable-wave")) {
