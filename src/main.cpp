@@ -12,8 +12,11 @@ class $modify(MyUILayer, UILayer) {
         UILayer::keyDown(key);
         if (key == enumKeyCodes::KEY_LeftBracket) {
             g_isModActive = !g_isModActive;
-            Notification::create(g_isModActive ? "Smooth Spam: ON" : "Smooth Spam: OFF", 
-                               g_isModActive ? NotificationIcon::Success : NotificationIcon::Error)->show();
+            if (g_isModActive) {
+                Notification::create("Smooth Spam: ON", NotificationIcon::Success)->show();
+            } else {
+                Notification::create("Smooth Spam: OFF", NotificationIcon::Error)->show();
+            }
         }
     }
 };
@@ -46,14 +49,27 @@ class $modify(MyPlayer, PlayerObject) {
             PlayerObject::pushButton(btn);
             return;
         }
-        float cps = (m_fields->m_clickTimer > 0.01f) ? 1.0f / m_fields->m_clickTimer : 0.0f;
+        
+        float cps = 0.0f;
+        if (m_fields->m_clickTimer > 0.01f) {
+            cps = 1.0f / m_fields->m_clickTimer;
+        }
+        
         if (cps >= 8.0f) {
             float curY = this->getPositionY();
             float newSlope = (curY - m_fields->m_lastY) / m_fields->m_clickTimer;
-            m_fields->m_slope = m_fields->m_isSpamming ? (m_fields->m_slope * 0.5f + newSlope * 0.5f) : newSlope;
+            if (m_fields->m_isSpamming) {
+                m_fields->m_slope = (m_fields->m_slope * 0.5f) + (newSlope * 0.5f);
+            } else {
+                m_fields->m_slope = newSlope;
+            }
             m_fields->m_isSpamming = true;
         }
-        if (cps <= Mod::get()->getSettingValue<int64_t>("max-cps")) PlayerObject::pushButton(btn);
+        
+        if (cps <= Mod::get()->getSettingValue<int64_t>("max-cps")) {
+            PlayerObject::pushButton(btn);
+        }
+        
         m_fields->m_clickTimer = 0.0f;
         m_fields->m_lastY = this->getPositionY();
     }
@@ -61,15 +77,23 @@ class $modify(MyPlayer, PlayerObject) {
     void update(float dt) {
         PlayerObject::update(dt);
         if (!g_isModActive) return;
+        
         m_fields->m_clickTimer += dt;
-        if (m_fields->m_clickTimer > 0.3f) m_fields->m_isSpamming = false;
+        if (m_fields->m_clickTimer > 0.3f) {
+            m_fields->m_isSpamming = false;
+        }
+        
         if (this->m_isDart && m_fields->m_isSpamming && Mod::get()->getSettingValue<bool>("enable-wave")) {
             float strength = Mod::get()->getSettingValue<double>("lock-strength");
             this->m_yVelocity *= 0.7f;
-            this->setPositionY(this->getPositionY() + (m_fields->m_slope * dt * strength));
+            float newY = this->getPositionY() + (m_fields->m_slope * dt * strength);
+            this->setPositionY(newY);
         }
-        if (this->m_isShip && Mod::get()->getSettingValue<bool>("enable-ship") && std::abs(this->m_yVelocity) < 5.0f) {
-            this->m_yVelocity *= 0.93f;
+        
+        if (this->m_isShip && Mod::get()->getSettingValue<bool>("enable-ship")) {
+            if (this->m_yVelocity > -5.0f && this->m_yVelocity < 5.0f) {
+                this->m_yVelocity *= 0.93f;
+            }
         }
     }
 };
