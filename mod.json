@@ -4,24 +4,21 @@
   "id": "nil422.smooth_spam",
   "name": "Smooth Spam",
   "developer": "nil422",
-  "description": "Take your wave gameplay to the next level. Press '[' in-game to toggle the assistant ON/OFF instantly. Features customizable lock strength, Max CPS limiter, visual debug lines, and a soft stabilizer for accurate ship straightfly.",
+  "description": "Smart wave and ship assistant. Press '[' in-game to toggle ON/OFF.",
   "early-load": false,
   "settings": {
     "enable-wave": {
       "name": "Enable Wave Assist",
-      "description": "Включает логику выравнивания для волны.",
       "type": "bool",
       "default": true
     },
     "enable-ship": {
       "name": "Accurate Straightfly",
-      "description": "Мягкий стабилизатор стрейтфлая для корабля.",
       "type": "bool",
       "default": true
     },
     "lock-strength": {
       "name": "Lock Strength (Wave)",
-      "description": "Насколько сильно мод примагничивает вейв.",
       "type": "float",
       "default": 0.5,
       "min": 0.1,
@@ -30,7 +27,6 @@
     },
     "max-cps": {
       "name": "Max CPS (Wave)",
-      "description": "Максимальный CPS на волне.",
       "type": "int",
       "default": 15,
       "min": 8,
@@ -39,7 +35,6 @@
     },
     "show-lines": {
       "name": "Show Lines",
-      "description": "Показывает зеленую линию (дебаг).",
       "type": "bool",
       "default": false
     }
