@@ -15,6 +15,6 @@ jobs:
           os: windows-latest
 
     name: Build ${{ matrix.config.name }}
-    uses: geode-sdk/build-action@v2
+    uses: geode-sdk/build-action/.github/workflows/build.yml@v2
     with:
       os: ${{ matrix.config.os }}
